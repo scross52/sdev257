@@ -1,44 +1,72 @@
-import { StatusBar } from 'expo-status-bar';
-import styled from "styled-components/native";
-import { Text, View } from 'react-native';
-import styles from "./Styles";
-import Row from "./Row";
-import Column from "./Column";
-import Box from "./Box";
-export default function App() {
+import React from 'react';
+import { Platform, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import styles from './Styles';
+
+// ----- Screen Components -----
+function PlanetsScreen() {
   return (
     <View style={styles.container}>
-      <StatusBar hidden={false} />
-      <Row>
-        <Column>
-          <Box>#1</Box>
-          <Box>#2</Box>
-        </Column>
-        <Column>
-          <Box>#3</Box>
-          <Box>#4</Box>
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Box>#5</Box>
-          <Box>#6</Box>
-        </Column>
-        <Column>
-          <Box>#7</Box>
-          <Box>#8</Box>
-        </Column>
-      </Row>
-      <Row>
-        <Column>
-          <Box>#9</Box>
-          <Box>#10</Box>
-        </Column>
-        <Column>
-          <Box>#11</Box>
-          <Box>#12</Box>
-        </Column>
-      </Row>
+      <Text style={styles.text}>Planets Screen</Text>
     </View>
+  );
+}
+
+function FilmsScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Films Screen</Text>
+    </View>
+  );
+}
+
+function SpaceshipsScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Spaceships Screen</Text>
+    </View>
+  );
+}
+
+// ----- Navigators -----
+const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
+function IOSNavigator() {
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Tab.Screen name="Planets" component={PlanetsScreen} />
+      <Tab.Screen name="Films" component={FilmsScreen} />
+      <Tab.Screen name="Spaceships" component={SpaceshipsScreen} />
+    </Tab.Navigator>
+  );
+}
+
+function AndroidNavigator() {
+  return (
+    <Drawer.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Drawer.Screen name="Planets" component={PlanetsScreen} />
+      <Drawer.Screen name="Films" component={FilmsScreen} />
+      <Drawer.Screen name="Spaceships" component={SpaceshipsScreen} />
+    </Drawer.Navigator>
+  );
+}
+
+// ----- Root App -----
+export default function App() {
+  return (
+    <NavigationContainer>
+      {Platform.OS === 'ios' ? <IOSNavigator /> : <AndroidNavigator />}
+    </NavigationContainer>
   );
 }

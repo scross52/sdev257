@@ -1,25 +1,17 @@
-import { Platform, StyleSheet, StatusBar } from "react-native";
-export default StyleSheet.create({
+import { StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "ghostwhite",
-     ...Platform.select({
-      ios: { paddingTop: 40 },
-      android: { paddingTop: StatusBar.currentHeight },
-    }),
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
   },
-  box: {
-    width: 100,
-    height: 100,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "lightgray",
-  },
-  boxText: {
-    color: "darkslategray",
-    fontWeight: "bold",
+  text: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#333',
   },
 });
+
+export default styles;
