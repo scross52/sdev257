@@ -1,34 +1,12 @@
 import React from 'react';
-import { Platform, Text, View } from 'react-native';
+import { Platform, Text, View,  } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import styles from './Styles';
+import Planets from './screens/Planets'
+import Spaceships from './screens/Ships'
+import Films from './screens/Films'
 
-// ----- Screen Components -----
-function PlanetsScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Planets Screen</Text>
-    </View>
-  );
-}
-
-function FilmsScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Films Screen</Text>
-    </View>
-  );
-}
-
-function SpaceshipsScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Spaceships Screen</Text>
-    </View>
-  );
-}
 
 // ----- Navigators -----
 const Tab = createBottomTabNavigator();
@@ -41,9 +19,9 @@ function IOSNavigator() {
         headerShown: false,
       }}
     >
-      <Tab.Screen name="Planets" component={PlanetsScreen} />
-      <Tab.Screen name="Films" component={FilmsScreen} />
-      <Tab.Screen name="Spaceships" component={SpaceshipsScreen} />
+      <Tab.Screen name="Planets" component={Planets} />
+      <Tab.Screen name="Films" component={Films} />
+      <Tab.Screen name="Spaceships" component={Spaceships} />
     </Tab.Navigator>
   );
 }
@@ -55,9 +33,9 @@ function AndroidNavigator() {
         headerShown: false,
       }}
     >
-      <Drawer.Screen name="Planets" component={PlanetsScreen} />
-      <Drawer.Screen name="Films" component={FilmsScreen} />
-      <Drawer.Screen name="Spaceships" component={SpaceshipsScreen} />
+      <Drawer.Screen name="Planets" component={Planets} />
+      <Drawer.Screen name="Films" component={Films} />
+      <Drawer.Screen name="Spaceships" component={Spaceships} />
     </Drawer.Navigator>
   );
 }
