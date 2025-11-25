@@ -30,7 +30,7 @@ function AndroidNavigator() {
   return (
     <Drawer.Navigator
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
       }}
     >
       <Drawer.Screen name="Planets" component={Planets} />
