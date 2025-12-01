@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import { Text, FlatList, } from 'react-native';
+import Swipeable from './Swipable';
+import ItemModal from './ItemModal';
 import styles from '../Styles';
 
 
 export default function Planets() {
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
 
   useEffect(() => {
@@ -36,15 +40,22 @@ export default function Planets() {
     await fetchItems();
     setRefreshing(false);
   };
+  const onSwipe = ({value}) => {
+    setSelectedItem(value);
+    setModalVisible(true);
+  };
 
   return (
+    <>
     <FlatList
       data={data}
       renderItem={({ item }) => (
-        <Text style={{ padding: 20 }}>{item.value}</Text>
+        <Swipeable key={item.id} onSwipe={() => onSwipe(item)} text={item.value} />
       )}
       refreshing={refreshing}
       onrefresh={onRefresh}
     />
+    <ItemModal text={selectedItem} visible={modalVisible} onClose={() => {setModalVisible(false)}} />
+    </>
   );
 }
