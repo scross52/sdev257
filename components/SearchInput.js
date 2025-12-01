@@ -21,6 +21,7 @@ export default function SearchInput({ placeholder }) {
       <TextInput
         style={styles.searchInput}
         placeholder={placeholder || "Search..."}
+        placeholderTextColor="gray"
         value={query}
         onChangeText={setQuery}
         returnKeyType="search"
