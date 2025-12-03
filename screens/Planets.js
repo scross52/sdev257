@@ -11,7 +11,7 @@ export default function Planets() {
     <ScrollView>
       <View style={styles.container}>
         <SearchInput placeholder={'Search across site...'} />
-        <LazyImage source={require('../images/planets.png')} />
+        <LazyImage source={require('../assets/planets.png')} />
         <Text style={styles.text}>Planets Screen</Text>
         <PlanetsList />
       </View> 
