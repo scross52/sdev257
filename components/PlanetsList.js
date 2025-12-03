@@ -55,6 +55,7 @@ export default function Planets() {
       )}
       refreshing={refreshing}
       onrefresh={onRefresh}
+      scrollEnabled={false}
     />
     <ItemModal text={selectedItem} visible={modalVisible} onClose={() => {setModalVisible(false)}} />
     </>

@@ -6,11 +6,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f9f9f9',
-    marginTop: 50,
+    paddingVertical: 25,
+    marginTop: 25,
+    marginBottom: 50,
   },
   text: {
     fontSize: 24,
     fontWeight: '600',
+    marginTop: 10,
     color: '#333',
   },
   swipeContainer: {
