@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Modal, Text, } from "react-native";
+import { View, Modal, Text, TouchableOpacity } from "react-native";
 import PropTypes from "prop-types";
 
 export default function SearchModal({ text, setModalVisible, modalVisible }) {
