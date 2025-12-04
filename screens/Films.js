@@ -10,7 +10,7 @@ export default function Films() {
     <ScrollView>
       <View style={styles.container}>
         <SearchInput placeholder={'Search across site...'} />
-        <LazyImage source={require('../images/films.png')} />
+        {/* <LazyImage source={require('../images/films.png')} /> */}
         <Text style={styles.text}>Films Screen</Text>
         <FilmList />
       </View>

@@ -10,7 +10,7 @@ export default function Spaceships() {
     <ScrollView>
       <View style={styles.container}>
         <SearchInput placeholder={'Search across site...'} />
-        <LazyImage source={require('../images/starships.png')} />
+        {/* <LazyImage source={require('../images/starships.png')} /> */}
         <Text style={styles.text}>Spaceships Screen</Text>
         <ShipsList />
       </View>
