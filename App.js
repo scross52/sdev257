@@ -1,12 +1,14 @@
-import React from 'react';
-import { Platform, Text, View,  } from 'react-native';
+import React, { useState, useEffect }from 'react';
+import { Platform, Text, View, TouchableOpacity, Modal } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import NetInfo from "@react-native-community/netinfo";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Planets from './screens/Planets'
 import Spaceships from './screens/Ships'
 import Films from './screens/Films'
-
+import styles from './Styles';
 
 // ----- Navigators -----
 const Tab = createBottomTabNavigator();
@@ -42,9 +44,62 @@ function AndroidNavigator() {
 
 // ----- Root App -----
 export default function App() {
+const [isConnected, setIsConnected] = useState(true);
+  const [showModal, setShowModal] = useState(false); // modal visibility
+  const [showBanner, setShowBanner] = useState(false); // passive notification
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      const connected =
+        state.isConnected && state.isInternetReachable !== false;
+
+      setIsConnected(connected);
+
+      if (!connected) {
+        // Show modal AND banner when offline
+        setShowModal(true);
+        setShowBanner(true);
+      } else {
+        // Hide everything when online
+        setShowModal(false);
+        setShowBanner(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <NavigationContainer>
-      {Platform.OS === 'ios' ? <IOSNavigator /> : <AndroidNavigator />}
+        {Platform.OS === 'ios' ? <IOSNavigator /> : <AndroidNavigator />}
+
+        {/* ✅ Passive banner at top */}
+        {showBanner && (
+          <View style={styles.banner}>
+            <Text style={styles.bannerText}>⚠ No Internet Connection</Text>
+          </View>
+        )}
+
+        {/* ✅ Modal (user can close it manually) */}
+        <Modal
+          visible={showModal}
+          animationType="fade"
+          transparent={true}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>No Internet Connection</Text>
+
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.closeText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
     </NavigationContainer>
   );
 }

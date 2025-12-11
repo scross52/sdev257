@@ -86,6 +86,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#ffffff',
   },
+  banner: {
+  backgroundColor: '#ffcc00',
+  padding: 10,
+  alignItems: 'center',
+  },
+
+  bannerText: {
+    fontWeight: 'bold',
+    color: '#000',
+  },
+
 });
 
 export default styles;
