@@ -28,7 +28,7 @@ function RootNavigator() {
       }}
       >
         <Stack.Screen name="Main" component={mainNavigator} />
-        <Stack.Screen name="Details" component={Details} />
+        <Stack.Screen name="Details" component={Details} options={{ headerShown: true, title: 'Details' }} />
       </Stack.Navigator>
   )
 }

@@ -10,7 +10,24 @@ const styles = StyleSheet.create({
     marginTop: 25,
     marginBottom: 50,
   },
+  section: {
+    flex: 1,
+    justifyContent: 'start',
+    alignItems: 'start',
+    backgroundColor: '#f9f9f9',
+    width: '70%',
+  },
+  pageHeading: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: '#333',
+  },
   text: {
+    fontSize: 18,
+    marginTop: 5,
+    color: '#333',
+  },
+  sectionHeading: {
     fontSize: 24,
     fontWeight: '600',
     marginTop: 10,
@@ -91,11 +108,17 @@ const styles = StyleSheet.create({
   padding: 10,
   alignItems: 'center',
   },
-
   bannerText: {
     fontWeight: 'bold',
     color: '#000',
   },
+  loadingContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingVertical: 40,
+},
+
 
 });
 

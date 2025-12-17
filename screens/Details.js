@@ -1,23 +1,30 @@
 import React, {useState, useCallback, useEffect} from 'react';
-import { Text, View, ScrollView, RefreshControl } from 'react-native';
+import { Text, View, ScrollView, RefreshControl, ActivityIndicator } from 'react-native';
 import SearchInput from '../components/SearchInput';
 
-import filmDetailsMapper from '../components/mappers/filmDetailsMapper';
+import { EntityMappers } from '../components/mappers/EntityMappers';
 
 import { useNetwork } from '../components/NetworkContext';
 import styles from '../Styles';
 
-const mappers = {
-  film: filmDetailsMapper,
-  ship: filmDetailsMapper,
-  planet: filmDetailsMapper,
+async function fetchRelations(urls) {
+  if (!urls || urls.length === 0) return [];
+
+  const requests = urls.map(u => fetch(u).then(res => res.json()));
+  const results = await Promise.all(requests);
+
+  return results.map(r => r.result.properties.name || r.result.properties.title);
 }
+
+
 
 export default function Details({ route}) {
   const {type, url} = route.params;
 
   const [refreshing, setRefreshing] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  const [loading, setLoading] = useState(false);
+  
   const [data, setData] = useState([]);
   
   const isConnected = useNetwork();
@@ -35,27 +42,38 @@ export default function Details({ route}) {
   }, []);
   
   const fetchItems = useCallback(async () => {
-    
+    setLoading(true);
     try {
       const response = await fetch(url);
       
       const json = await response.json();
-      console.log(json)
       
-      const mapperfunction = mappers[type];
+      const mapperfunction = EntityMappers[type];
       
-      console.log(mapperfunction)
       const mapped = mapperfunction(json);
-      
-      console.log("Mapped Variable", mapped)
-      setData(mapped);
-      console.log("data variable", data)
+
+      // Fetch relationships in parallel
+      const relations = mapped.relations;
+      const [planets, starships, vehicles, characters] = await Promise.all([
+        fetchRelations(relations.planets),
+        fetchRelations(relations.starships),
+        fetchRelations(relations.vehicles),
+        fetchRelations(relations.characters),
+      ]);
+
+      // Put them back into data
+      setData({
+        ...mapped,
+        relations: { planets, starships, vehicles, characters }
+      });
       
     } catch (err) {
       console.error("Fetch error:", err);
+    } finally {
+      setLoading(false);
     }
     
-  }, [url, mappers]);
+  }, [url, type]);
 
   
   useEffect(() => {
@@ -66,18 +84,41 @@ export default function Details({ route}) {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      ) : (
       <View style={styles.container}>
-        <SearchInput placeholder={'Search across site...'} />
-        <Text style={styles.text}>{data.title}</Text>
-        {data?.attributes?.map((attr, key) => (
-          <View key={key}> 
-            <Text>{attr.label}</Text>
-            <Text>{attr.value}</Text>
-          </View>
-       ))}
-        
+        <Text style={styles.pageHeading}>{data.title}</Text>
 
+        <View style={styles.section}>
+
+          {data?.attributes?.map((attr, key) => (
+            <View key={key}> 
+              <Text style={styles.sectionHeading}>{attr.label}</Text>
+              <Text style={styles.text}>{attr.value}</Text>
+            </View>
+        ))}
+
+        {/* Display Entity Relationships */}
+        {Object.entries(data?.relations ?? {}).map(([relationType, urls]) => (
+            urls.length > 0 && (
+              <View key={relationType}>
+                <Text style={styles.sectionHeading}>
+                  {relationType.toUpperCase()}
+                </Text>
+
+                {urls.map((url, index) => (
+                  <Text key={index} style={styles.text}>{url}</Text>
+                ))}
+              </View>
+            )
+          ))}
+        
+        </View>
       </View>
+      )}
     </ScrollView>
   );
 }
