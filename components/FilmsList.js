@@ -1,21 +1,21 @@
 import React, {useEffect, useState} from 'react';
 import { Text, FlatList, } from 'react-native';
-import Swipeable from './Swipable';
+import Swipeable from './Swipeable';
 import ItemModal from './ItemModal';
 import styles from '../Styles';
-import { View } from 'react-native-web';
 
 
-export default function Planets() {
+export default function Planets({ reloadKey }) {
   const [data, setData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
 
+
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [reloadKey]);
 
   const fetchItems = async () => {
 

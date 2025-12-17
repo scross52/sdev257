@@ -1,18 +1,43 @@
 import React, { useState, useEffect }from 'react';
 import { Platform, Text, View, TouchableOpacity, Modal } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import NetInfo from "@react-native-community/netinfo";
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Planets from './screens/Planets'
-import Spaceships from './screens/Ships'
-import Films from './screens/Films'
+import { NetworkContext } from './components/NetworkContext';
+
+import Planets from './screens/Planets';
+import Spaceships from './screens/Ships';
+import Films from './screens/Films';
+import Details from './screens/Details';
+
 import styles from './Styles';
 
 // ----- Navigators -----
+const Stack = createNativeStackNavigator();
+
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
+
+function RootNavigator() {
+  return (
+      <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+      >
+        <Stack.Screen name="Main" component={mainNavigator} />
+        <Stack.Screen name="Details" component={Details} />
+      </Stack.Navigator>
+  )
+}
+
+function mainNavigator() {
+  return (
+    Platform.OS === 'ios' ? <IOSNavigator /> : <AndroidNavigator />
+  )
+}
 
 function IOSNavigator() {
   return (
@@ -70,8 +95,9 @@ const [isConnected, setIsConnected] = useState(true);
   }, []);
 
   return (
-    <NavigationContainer>
-        {Platform.OS === 'ios' ? <IOSNavigator /> : <AndroidNavigator />}
+    <NetworkContext.Provider value={{ isConnected }}>
+      <NavigationContainer>
+        <RootNavigator />
 
         {/* ✅ Passive banner at top */}
         {showBanner && (
@@ -101,5 +127,6 @@ const [isConnected, setIsConnected] = useState(true);
         </Modal>
 
     </NavigationContainer>
+    </NetworkContext.Provider>
   );
 }

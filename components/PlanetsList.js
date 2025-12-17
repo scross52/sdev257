@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { Text, FlatList, } from 'react-native';
-import Swipeable from './Swipable';
+import Swipeable from './Swipeable';
 import ItemModal from './ItemModal';
 import styles from '../Styles';
 
