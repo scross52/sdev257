@@ -26,9 +26,6 @@ function mapAttributes(properties, excludedKeys = []) {
 function filmDetailsMapper(item) {
   const properties = item.result.properties;
 
-  console.log(item)
-  console.log(properties)
-
   return {
     title: properties.title,
     attributes: mapAttributes(properties, ['title', 'planets', 'starships', 'vehicles', 'characters']),
@@ -43,9 +40,6 @@ function filmDetailsMapper(item) {
 
 function planetDetailsMapper(item) {
   const properties = item.result.properties;
-
-  console.log(item)
-  console.log(properties)
 
   return {
     title: properties.title,
