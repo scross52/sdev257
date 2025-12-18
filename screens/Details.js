@@ -10,10 +10,37 @@ import styles from '../Styles';
 async function fetchRelations(urls) {
   if (!urls || urls.length === 0) return [];
 
-  const requests = urls.map(u => fetch(u).then(res => res.json()));
+  const requests = urls.map(async (u) => {
+    if (!u || typeof u !== 'string') {
+      return null;
+    }
+
+    try {
+      const res = await fetch(u);
+
+      if (!res.ok) {
+        console.warn(`Fetch failed (${res.status}):`)
+        return null;
+      } 
+
+      const json = await res.json();
+      
+      return (
+        json?.result?.properties?.name ??
+        json?.result?.properties?.title ??
+        null
+      );
+
+    } catch (err) {
+      console.warn('Relation fetch failed:', u, err);
+      return null;
+    }
+
+  });
+
   const results = await Promise.all(requests);
 
-  return results.map(r => r.result.properties.name || r.result.properties.title);
+  return results.filter(Boolean);
 }
 
 
@@ -23,9 +50,16 @@ export default function Details({ route}) {
 
   const [refreshing, setRefreshing] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-  const [loading, setLoading] = useState(false);
+
+  const [loadingEntity, setLoadingEntity] = useState(false);
+  const [loadingRelations, setLoadingRelations] = useState({
+    planets: false,
+    starships: false,
+    vehicles: false,
+    characters: false
+  });
   
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({});
   
   const isConnected = useNetwork();
 
@@ -39,10 +73,10 @@ export default function Details({ route}) {
 
     setReloadKey(k => k + 1);
     setRefreshing(false);
-  }, []);
+  }, [isConnected]);
   
   const fetchItems = useCallback(async () => {
-    setLoading(true);
+    setLoadingEntity(true);
     try {
       const response = await fetch(url);
       
@@ -51,26 +85,43 @@ export default function Details({ route}) {
       const mapperfunction = EntityMappers[type];
       
       const mapped = mapperfunction(json);
-
-      // Fetch relationships in parallel
-      const relations = mapped.relations;
-      const [planets, starships, vehicles, characters] = await Promise.all([
-        fetchRelations(relations.planets),
-        fetchRelations(relations.starships),
-        fetchRelations(relations.vehicles),
-        fetchRelations(relations.characters),
-      ]);
-
-      // Put them back into data
+      
       setData({
         ...mapped,
-        relations: { planets, starships, vehicles, characters }
+        relations: {
+          planets: [],
+          starships: [],
+          vehicles: [],
+          characters: [],
+          ...mapped.relations
+        }
+      });
+
+      Object.entries(mapped.relations ?? {}).forEach(([relationType, urls]) => {
+        setLoadingRelations(prev => ({
+          ...prev,
+          [relationType]: true
+        }));
+
+        fetchRelations(urls).then(result => {
+          setData(prev => ({
+            ...prev,
+            relations: {
+              ...prev.relations,
+              [relationType]: result
+            }
+          }));
+          setLoadingRelations(prev => ({
+          ...prev,
+          [relationType]: false
+        }));
+        });
       });
       
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
-      setLoading(false);
+      setLoadingEntity(false);
     }
     
   }, [url, type]);
@@ -84,40 +135,43 @@ export default function Details({ route}) {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      {loading ? (
+      {loadingEntity ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
         </View>
       ) : (
-      <View style={styles.container}>
-        <Text style={styles.pageHeading}>{data.title}</Text>
+        <View style={styles.container}>
+          <Text style={styles.pageHeading}>{data.title}</Text>
 
-        <View style={styles.section}>
+          <View style={styles.section}>
 
-          {data?.attributes?.map((attr, key) => (
-            <View key={key}> 
-              <Text style={styles.sectionHeading}>{attr.label}</Text>
-              <Text style={styles.text}>{attr.value}</Text>
-            </View>
-        ))}
-
-        {/* Display Entity Relationships */}
-        {Object.entries(data?.relations ?? {}).map(([relationType, urls]) => (
-            urls.length > 0 && (
-              <View key={relationType}>
-                <Text style={styles.sectionHeading}>
-                  {relationType.toUpperCase()}
-                </Text>
-
-                {urls.map((url, index) => (
-                  <Text key={index} style={styles.text}>{url}</Text>
-                ))}
+            {data?.attributes?.map((attr, key) => (
+              <View key={key}> 
+                <Text style={styles.sectionHeading}>{attr.label}</Text>
+                <Text style={styles.text}>{attr.value}</Text>
               </View>
-            )
-          ))}
-        
+            ))}
+
+            {Object.entries(data?.relations ?? {}).map(([relationType, urls]) => (
+                urls.length > 0 && (
+                  <View key={relationType}>
+                    <Text style={styles.sectionHeading}>
+                      {relationType.toUpperCase()}
+                    </Text>
+
+                    {loadingRelations[relationType] ? (
+                      <ActivityIndicator size="large" color="#0000ff" />
+                    ) : (
+                      urls.map((url, index) => (
+                        <Text key={index} style={styles.text}>{url}</Text>
+                      ))
+                    )}
+                  </View>
+                )
+            ))}
+          
+          </View>
         </View>
-      </View>
       )}
     </ScrollView>
   );

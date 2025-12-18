@@ -27,13 +27,13 @@ function RootNavigator() {
         headerShown: false,
       }}
       >
-        <Stack.Screen name="Main" component={mainNavigator} />
+        <Stack.Screen name="Main" component={MainNavigator} />
         <Stack.Screen name="Details" component={Details} options={{ headerShown: true, title: 'Details' }} />
       </Stack.Navigator>
   )
 }
 
-function mainNavigator() {
+function MainNavigator() {
   return (
     Platform.OS === 'ios' ? <IOSNavigator /> : <AndroidNavigator />
   )

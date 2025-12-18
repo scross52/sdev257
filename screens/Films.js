@@ -16,7 +16,6 @@ export default function Films() {
   const [refreshing, setRefreshing] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
-  const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   
   const isConnected = useNetwork();
@@ -33,7 +32,7 @@ export default function Films() {
 
     setReloadKey(k => k + 1);
     setRefreshing(false);
-  }, []);
+  }, [isConnected]);
 
   return (
     <ScrollView
