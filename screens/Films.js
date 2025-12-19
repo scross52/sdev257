@@ -14,6 +14,10 @@ import styles from '../Styles';
 export default function Films() {
   const [refreshing, setRefreshing] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+
+  const [query, setQuery] = useState('');
+  
+  const [url, setUrl] = useState('https://www.swapi.tech/api/films/');
   
   const isConnected = useNetwork();
   const navigation = useNavigation();
@@ -28,6 +32,9 @@ export default function Films() {
     }
 
     setReloadKey(k => k + 1);
+    setUrl('https://www.swapi.tech/api/films/')
+    setQuery('')
+
     setRefreshing(false);
   }, [isConnected]);
 
@@ -38,14 +45,14 @@ export default function Films() {
     >
       <View style={styles.container}>
 
-        <SearchInput placeholder={'Search films...'} />
+        <SearchInput placeholder={'Search films...'} value={query} onChange={setQuery} onSubmit={() => {setUrl(`https://www.swapi.tech/api/films/?title=${query}`); setReloadKey(k => k + 1);}} />
 
         <LazyImage source={require('../assets/films.png')} />
 
         <Text style={styles.pageHeading}>Films Screen</Text>
 
         <RemoteList
-          url={"https://www.swapi.tech/api/films/"}
+          url={url}
           reloadKey={reloadKey}
           mapResponse={(json) => {
             return json.result.map((item, i) => ({
@@ -56,7 +63,6 @@ export default function Films() {
           }
           renderItem={({ item }) => (
             <Swipeable
-              key={item.id}
               text={item.value}
               onSwipe={() => {
                 navigation.navigate('Details', {

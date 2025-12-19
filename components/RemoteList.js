@@ -12,24 +12,28 @@ export default function RemoteList({ reloadKey = 0, url, mapResponse, renderItem
   useEffect(() => {
     setData([]);
     fetchItems();
-  }, [reloadKey]);
+  }, [url]);
 
   const fetchItems = useCallback(async () => {
 
     try {
       
       let nextUrl = url;
+      let allItems = [];
+      
       while (nextUrl) {
       const response = await fetch(nextUrl);
       const json = await response.json();
 
       const mapped = await mapResponse(json);
 
-      setData(prev => [...prev, ...mapped]);
+      allItems = [...allItems, ...mapped];
 
-       nextUrl = json.next;
-      }
-
+      
+      nextUrl = json.next;
+    }
+    
+    setData(allItems);
     } catch (err) {
       console.error("Fetch error:", err);
     }

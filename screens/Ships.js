@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import { Text, View, ScrollView, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -15,7 +15,8 @@ import styles from '../Styles';
 export default function Spaceships() {
   const [refreshing, setRefreshing] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
-
+  
+  const [query, setQuery] = useState('');
 
   const [url, setUrl] = useState('https://www.swapi.tech/api/starships/');
   
@@ -32,15 +33,10 @@ export default function Spaceships() {
     }
     setReloadKey(k => k + 1);
     setUrl('https://www.swapi.tech/api/starships/')
+    setQuery('')
 
     setRefreshing(false);
   }, [isConnected]);
-
-
-  const handleQuery = useCallback((query) => {
-    setUrl(`https://www.swapi.tech/api/starships/?name=${query}`)
-    setReloadKey(k => k + 1);
-  }) 
 
 
   return (
@@ -50,7 +46,7 @@ export default function Spaceships() {
     >
       <View style={styles.container}>
 
-        <SearchInput placeholder={'Search starships...'} search={(query) => handleQuery(query)} />
+        <SearchInput placeholder={'Search starships...'} value={query} onChange={setQuery} onSubmit={() => {setUrl(`https://www.swapi.tech/api/starships/?name=${query}`); setReloadKey(k => k + 1);}} />
 
         <LazyImage source={require('../assets/starships.png')} />
 
@@ -62,12 +58,11 @@ export default function Spaceships() {
                     const list = json.results ?? json.result ?? [];
                     return list.map((ship, i) => {
                       const source = ship.properties ?? ship;
-                     return {
-                      id: ship.uid,
-                      value: source.name,
-                      url: source.url,
-                        }
-                      }
+                      return {
+                        id: ship.uid,
+                        value: source.name,
+                        url: source.url,
+                      }}
                     )}
                   }
                   renderItem={({ item }) => (

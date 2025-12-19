@@ -17,6 +17,10 @@ export default function Planets() {
   const [refreshing, setRefreshing] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
+   const [query, setQuery] = useState('');
+  
+    const [url, setUrl] = useState('https://www.swapi.tech/api/planets/');
+
   const isConnected = useNetwork();
   const navigation = useNavigation();
 
@@ -29,6 +33,9 @@ export default function Planets() {
     }
 
     setReloadKey(k => k + 1);
+    setUrl('https://www.swapi.tech/api/planets/')
+    setQuery('')
+
     setRefreshing(false);
   }, []);
 
@@ -38,18 +45,25 @@ export default function Planets() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <View style={styles.container}>
-        <SearchInput placeholder={'Search planets...'} />
+
+        <SearchInput placeholder={'Search planets...'} value={query} onChange={setQuery} onSubmit={() => {setUrl(`https://www.swapi.tech/api/planets/?name=${query}`); setReloadKey(k => k + 1);}} />
+
         <LazyImage source={require('../assets/planets.png')} />
+
         <Text style={styles.pageHeading}>Planets Screen</Text>
         <RemoteList
-          url={"https://www.swapi.tech/api/planets/"}
+          url={url}
           reloadKey={reloadKey}
           mapResponse={(json) => {
-            return json.results.map((planet, i) => ({
-              id: planet.uid,
-              value: planet.name,
-              url: planet.url,
-            }))}
+            const list = json.results ?? json.result ?? [];
+            return list.map((planet, i) => {
+              const source = planet.properties ?? planet;
+              return {
+                id: planet.uid,
+                value: source.name,
+                url: source.url,
+              }}
+            )}
           }
           renderItem={({ item }) => (
             <Swipeable

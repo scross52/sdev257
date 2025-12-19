@@ -3,13 +3,7 @@ import { View, TextInput, StyleSheet, Modal, TouchableOpacity, Keyboard, Text } 
 import PropTypes from "prop-types";
 import styles from "../Styles";
 
-export default function SearchInput({ placeholder, search }) {
-
-  const [query, setQuery] = useState("");
-
-  const handleQuery = () => {
-    search(query);
-  };
+export default function SearchInput({ placeholder, value, onChange, onSubmit }) {
 
 
   return(
@@ -17,11 +11,13 @@ export default function SearchInput({ placeholder, search }) {
       <TextInput
         style={styles.searchInput}
         placeholder={placeholder || "Search..."}
-        value={query}
-        onChangeText={setQuery}
+        value={value}
+        onChangeText={onChange}
         returnKeyType="search"
         clearButtonMode="while-editing"
-        onSubmitEditing={handleQuery}
+        onSubmitEditing={() => {
+          if (typeof onSubmit === 'function') onSubmit();  // triggers search
+        }}
       />
       
     </View>
