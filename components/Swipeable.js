@@ -4,18 +4,25 @@ import { View, ScrollView, Text, TouchableOpacity } from
 import styles from "../Styles";
 export default function Swipeable({ onSwipe, text }) {
   
-  const scrollRef = useRef(null);
+  const scrollRef = useRef();
+  const swipeHandled = useRef(false);
   
   function handleScrollEnd(e) {
     const x = e.nativeEvent.contentOffset.x;
     const THRESHOLD = 200 * 0.75;
 
     if (x >= THRESHOLD) {
-      // Full swipe — trigger action
-      onSwipe();
+
+      if (!swipeHandled.current) {   // <--- only trigger once
+        swipeHandled.current = true;
+        onSwipe();
+
+        // Reset after a short delay so next swipe can trigger
+        setTimeout(() => { swipeHandled.current = false }, 1000);
+      }
 
       // Reset ScrollView position manually
-      scrollRef.current?.scrollTo({ x: 0, animated: false });
+      scrollRef.current?.scrollTo({ x: 0, y: 0, animated: false });
     } else {
       // Partial swipe — snap back
       scrollRef.current?.scrollTo({ x: 0, animated: true });
@@ -28,6 +35,7 @@ export default function Swipeable({ onSwipe, text }) {
     showsHorizontalScrollIndicator: false,
     onMomentumScrollEnd: handleScrollEnd,
     scrollEventThrottle: 10,
+    ref: scrollRef,
   };
 
   return (
