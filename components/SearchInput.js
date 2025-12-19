@@ -3,16 +3,12 @@ import { View, TextInput, StyleSheet, Modal, TouchableOpacity, Keyboard, Text } 
 import PropTypes from "prop-types";
 import styles from "../Styles";
 
-export default function SearchInput({ placeholder }) {
+export default function SearchInput({ placeholder, search }) {
 
   const [query, setQuery] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
 
-  const handleShowModal = () => {
-    if (query.trim() !== "") {
-    
-    setTimeout(() => setModalVisible(true), 50);
-  }
+  const handleQuery = () => {
+    search(query);
   };
 
 
@@ -25,27 +21,9 @@ export default function SearchInput({ placeholder }) {
         onChangeText={setQuery}
         returnKeyType="search"
         clearButtonMode="while-editing"
-        onSubmitEditing={handleShowModal}
+        onSubmitEditing={handleQuery}
       />
-
-      <Modal
-        visible={modalVisible}
-        animationType="fade"
-        transparent={true}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>You typed:</Text>
-            <Text style={styles.modalText}>{query}</Text>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      
     </View>
   )
 }

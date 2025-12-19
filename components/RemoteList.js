@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import { FlatList, } from 'react-native';
-import styles from '../Styles';
 
 
 export default function RemoteList({ reloadKey = 0, url, mapResponse, renderItem, scrollEnabled = true}) {
@@ -11,18 +10,25 @@ export default function RemoteList({ reloadKey = 0, url, mapResponse, renderItem
   }
 
   useEffect(() => {
+    setData([]);
     fetchItems();
   }, [reloadKey]);
 
   const fetchItems = useCallback(async () => {
 
     try {
-      const response = await fetch(url);
+      
+      let nextUrl = url;
+      while (nextUrl) {
+      const response = await fetch(nextUrl);
       const json = await response.json();
 
       const mapped = await mapResponse(json);
 
-      setData(mapped);
+      setData(prev => [...prev, ...mapped]);
+
+       nextUrl = json.next;
+      }
 
     } catch (err) {
       console.error("Fetch error:", err);
@@ -36,6 +42,7 @@ export default function RemoteList({ reloadKey = 0, url, mapResponse, renderItem
     <FlatList
       data={data}
       renderItem={renderItem}
+      keyExtractor={item => item.id}
       scrollEnabled={scrollEnabled}
     />
     </>

@@ -42,8 +42,22 @@ function planetDetailsMapper(item) {
   const properties = item.result.properties;
 
   return {
-    title: properties.title,
-    attributes: mapAttributes(properties, ['title']),
+    title: properties.name,
+    attributes: mapAttributes(properties, ['name']),
+    relations: {
+      planets: properties.planets ?? [],
+      starships: properties.starships ?? [],
+      vehicles: properties.vehicles ?? [],
+      characters: properties.characters ?? [],
+    }
+  };
+}
+function starshipDetailsMapper(item) {
+  const properties = item.result.properties;
+
+  return {
+    title: properties.name,
+    attributes: mapAttributes(properties, ['name']),
     relations: {
       planets: properties.planets ?? [],
       starships: properties.starships ?? [],
@@ -56,4 +70,5 @@ function planetDetailsMapper(item) {
 export const EntityMappers = {
   film: filmDetailsMapper,
   planet: planetDetailsMapper,
+  starship: starshipDetailsMapper,
 };

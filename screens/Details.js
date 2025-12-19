@@ -45,7 +45,7 @@ async function fetchRelations(urls) {
 
 
 
-export default function Details({ route}) {
+export default function Details({ route }) {
   const {type, url} = route.params;
 
   const [refreshing, setRefreshing] = useState(false);

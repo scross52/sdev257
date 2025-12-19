@@ -30,6 +30,7 @@ export default function LazyImage({
 const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
+    paddingVertical: 10,
   },
   placeholder: {
     ...StyleSheet.absoluteFillObject,
